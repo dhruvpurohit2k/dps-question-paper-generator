@@ -1,0 +1,71 @@
+#AddItemMenu {
+  border: 2px solid var(--blue);
+  position: relative;
+  border-radius: 5px;
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 148px;
+  /*box-shadow: 0px 0px 10px 5px rgba(125, 125, 125, 0.2);*/
+  width: 250px;
+
+  .AddItemMenuItem {
+    font-size: 1.25em;
+    padding: 20px;
+    border-bottom: 1px solid grey;
+    /*box-shadow: inset 0px 0px 4px 2px var(--item-background);*/
+  }
+
+  .AddItemMenuItem:hover {
+    box-shadow: none;
+    background-color: var(--blue);
+    color: white;
+  }
+
+  .AddItemMenuClose:hover {
+    background-color: rgb(200, 0, 0);
+    box-shadow: 0px 0px 5px 0px rgba(125, 125, 125, 0.2);
+  }
+
+  .AddItemMenuClose {
+    position: absolute;
+    background-color: red;
+    padding: 10px 15px;
+    border-radius: 30px;
+    color: white;
+    font-size: 1.25em;
+    right: -20px;
+    top: -20px;
+  }
+
+  .AddItemMenuButton {
+    background-color: white;
+    border: 2px solid var(--blue);
+    padding: 10px 10px;
+    position: absolute;
+    height: 40px;
+    left: -1px;
+    top: -40px;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+  }
+
+  .AddItemMenuButton:last-of-type {
+    left: 75px;
+  }
+
+  .AddItemMenuButton:first-of-type {}
+
+  .AddItemMenuButton.open {
+    outline: none;
+    background-color: var(--blue);
+    color: white;
+  }
+
+  .AddItemMenuButton:hover {
+    background-color: var(--item-background);
+  }
+
+  .AddItemMenuButton.open:hover {
+    background-color: var(--dark-blue);
+  }
+}

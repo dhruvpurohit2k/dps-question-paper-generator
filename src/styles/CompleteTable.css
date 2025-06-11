@@ -1,0 +1,29 @@
+.CompleteTable {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 10px;
+  row-gap: 10px;
+  background-color: var(--item-background);
+  margin-top: 30px;
+  padding: 20px;
+  border-radius: 10px;
+
+  .CompleteTableLabel {
+    grid-column: 1/-1;
+    font-size: 1.25em;
+  }
+
+  p {
+    font-size: 1.25em;
+    margin-bottom: 20px;
+  }
+
+  .CompleteTableWrapper {
+    grid-column: 1/-1;
+
+    input {
+      width: 10ch;
+      margin-left: 10px;
+    }
+  }
+}

@@ -1,0 +1,13 @@
+.QuestionDescription {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: 10px;
+  padding: 20px;
+  background-color: var(--item-background);
+  border-radius: 10px;
+
+  .QuestionDescriptionLabel {
+    font-size: 1.25em;
+  }
+}

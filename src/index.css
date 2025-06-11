@@ -1,0 +1,19 @@
+:root {
+  height: 100%;
+  --green: #009540;
+  --green-alpha: #009540dd;
+  --item-background: #eceff4;
+  --blue: #3176f5;
+  --dark-blue: #2065e4;
+}
+
+@font-face {
+  font-family: "booker";
+  src: url("./fonts/GoudyBookletter1911-Regular.ttf") format("truetype");
+}
+
+* {
+  padding: 0px;
+  margin: 0px;
+  box-sizing: border-box;
+}

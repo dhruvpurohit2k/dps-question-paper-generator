@@ -1,0 +1,96 @@
+#root {
+  max-width: 1280px;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  padding-bottom: 50px;
+}
+
+* {
+  font-family: sans-serif;
+  box-sizing: border-box;
+  margin: 0px;
+  padding: 0px;
+}
+
+body {
+  padding: 0px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin: 0px;
+}
+
+#main-content {
+  width: 80%;
+  padding: 20px;
+  border-radius: 30px;
+  margin: 40px 0px;
+  box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.2);
+  border: 2px solid rgba(49, 118, 245, 0.7);
+  overflow-y: auto;
+}
+
+#add-item {
+  padding: 7px 80px;
+  border-radius: 20px;
+  font-size: 2.5em;
+  background-color: #3176f5;
+  color: white;
+}
+
+#add-item:hover {
+  background-color: #2065e4;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.5);
+  transform: scale(1.01);
+}
+
+textarea,
+input {
+  padding: 0.2rem;
+  font-size: 1.1rem;
+  overflow-y: auto;
+  width: 100%;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border: 2px solid var(--blue);
+}
+
+hr {
+  margin: 50px 0px;
+}
+
+.QuestionWrapper {
+  position: relative;
+}
+
+.QuestionWrapperClose {
+  position: absolute;
+  border: none;
+  padding: 10px 20px;
+  top: 0px;
+  right: 0px;
+  background-color: red;
+  color: white;
+  border-bottom-left-radius: 5px;
+}
+
+.QuestionWrapperClose:hover {
+  background-color: rgb(200, 0, 0);
+  transform: scale(1.01);
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
+}
+
+.QuestionMarksWrapper {
+  display: grid;
+  grid-template-columns: 8fr 1fr;
+  gap: 10px;
+}

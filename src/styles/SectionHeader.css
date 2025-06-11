@@ -1,0 +1,29 @@
+.SectionHeader {
+  display: flex;
+  align-items: center;
+  background-color: rgba(49, 118, 245, 1);
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+
+  .SectionHeaderLabel {
+    font-size: 1.25rem;
+    margin-right: 20px;
+  }
+
+  .SectionHeaderInput:focus {
+    outline: none;
+  }
+
+  .SectionHeaderInput {
+    padding: 5px;
+    font-size: 1.25em;
+    width: auto;
+    border-radius: 10px;
+    border: none;
+
+    option {
+      border: none;
+    }
+  }
+}

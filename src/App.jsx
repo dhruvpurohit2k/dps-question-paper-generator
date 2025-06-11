@@ -1,0 +1,337 @@
+import { Packer } from "docx";
+import "./App.css";
+import "./styles/questionHolder.css";
+import React, { useState, useEffect, useRef } from "react";
+import NavBar from "./components/NavBar";
+import PaperDetails from "./components/PaperDetails.jsx";
+import MultipleChoice from "./components/MultipleChoice.jsx";
+import BasicQuestion from "./components/BasicQuestion.jsx";
+import MatchFollowing from "./components/MatchFollowing.jsx";
+import CompleteTable from "./components/CompleteTabel.jsx";
+import Assertion from "./components/Assertion.jsx";
+import LongQuestion from "./components/LongQuestion.jsx";
+import Map from "./components/Map.jsx";
+import AddItemMenu from "./components/AddItemMenu.jsx";
+import SectionHeader from "./components/SectionHeader.jsx";
+import QuestionDescription from "./components/QuestionDescription.jsx";
+
+import main from "./questionpaper.js";
+
+function App() {
+  const date = new Date().toISOString().slice(0, 10);
+  const [uniqueId, setUniqueId] = useState(1);
+  const [items, setItems] = useState([
+    {
+      component: PaperDetails,
+      instance: "PAPER_DETAILS",
+      key: 0,
+      options: { id: 0, changeInput: changeInput },
+      input: {
+        grade: "VII",
+        time: "1",
+        subject: "SOCIAL STUDIES",
+        marks: "40",
+        date: date,
+        set: "A",
+        paperType: "UNIT TEST",
+      },
+    },
+  ]);
+  const [questionNumber, setQuestionNumber] = useState(1);
+
+  const mainContentRef = useRef(null);
+
+  const [addItemMenu, setAddItemMenu] = useState(false);
+
+  const questionlist = [
+    {
+      isQuestion: true,
+      name: "Multiple Choice",
+      component: MultipleChoice,
+      instance: "MULTIPLE_CHOICE",
+      options: {
+        changeInput: changeInput,
+      },
+      input: {
+        marks: "",
+        question: "",
+        option1: "",
+        option2: "",
+        option3: "",
+        option4: "",
+      },
+    },
+    {
+      isQuestion: true,
+      name: "Source Based Questions",
+      component: LongQuestion,
+      instance: "LONG_QUESTION",
+      options: {
+        changeInput: changeInput,
+      },
+      input: {
+        source: "",
+        question1: {
+          question: "",
+          marks: "",
+        },
+        question2: {
+          question: "",
+          marks: "",
+        },
+        question3: {
+          question: "",
+          marks: "",
+        },
+        question4: {
+          question: "",
+          marks: "",
+        },
+      },
+    },
+    {
+      isQuestion: true,
+      name: "Match the Following",
+      component: MatchFollowing,
+      instance: "MATCH_FOLLOWING",
+      options: {
+        changeInput: changeInput,
+      },
+      input: {
+        question: {
+          string: "Match the following",
+          marks: "",
+        },
+        colA: {
+          row1: "",
+          row2: "",
+          row3: "",
+          row4: "",
+        },
+        colB: {
+          row1: "",
+          row2: "",
+          row3: "",
+          row4: "",
+        },
+        option1: "",
+        option2: "",
+        option3: "",
+        option4: "",
+      },
+    },
+    {
+      isQuestion: true,
+      name: "Complete the Table",
+      component: CompleteTable,
+      instance: "COMPLETE_TABLE",
+      options: {
+        changeInput: changeInput,
+      },
+      input: {
+        question: {
+          string: "",
+          marks: "",
+        },
+        meaning: "",
+        word: "",
+        marks: "",
+        blanks: "",
+      },
+    },
+    {
+      isQuestion: true,
+      name: "Assertion based question",
+      component: Assertion,
+      instance: "ASSERTION",
+      options: {
+        changeInput: changeInput,
+      },
+      input: {
+        marks: "",
+        assertion: "",
+        reason: "",
+        option1: "",
+        option2: "",
+        option3: "",
+        option4: "",
+      },
+    },
+    {
+      isQuestion: true,
+      name: "Question",
+      component: BasicQuestion,
+      instance: "QUESTION",
+      options: {
+        BasicQuestionType: "Write a question",
+        changeInput: changeInput,
+      },
+      input: {
+        marks: "",
+        question: "",
+      },
+    },
+    {
+      isQuestion: true,
+      name: "Fill in the blanks",
+      component: BasicQuestion,
+      instance: "QUESTION",
+      options: {
+        BasicQuestionType: "Fill in the blanks",
+        changeInput: changeInput,
+      },
+      input: {
+        marks: "",
+        question: "",
+      },
+    },
+    {
+      isQuestion: true,
+      name: "Map",
+      instance: "MAP",
+      component: Map,
+      options: {
+        changeInput: changeInput,
+      },
+      input: {
+        marks: "",
+        option1: "",
+        option2: "",
+        option3: "",
+        option4: "",
+      },
+    },
+  ];
+  const others = [
+    {
+      isQuestion: false,
+      name: "Section",
+      instance: "SECTION",
+      component: SectionHeader,
+      input: {
+        section: "",
+      },
+      options: {
+        changeInput: changeInput,
+      },
+    },
+    {
+      isQuestion: false,
+      name: "Question Description",
+      instance: "QUESTION_DESCRIPTION",
+      component: QuestionDescription,
+      input: {
+        description: "",
+      },
+      options: {
+        changeInput: changeInput,
+      },
+    },
+  ];
+
+  function changeInput(id, field, event) {
+    setItems((prevItems) => {
+      return prevItems.map((item) => {
+        if (item.options.id == id) {
+          console.log(
+            `Changing input of ${id} with ${event.target.value} at fiedl ${field}`,
+          );
+          if (typeof field == "object") {
+            const [questionNumber, option] = field;
+            item.input[questionNumber][option] = event.target.value;
+          } else item.input[field] = event.target.value;
+        }
+        return item;
+      });
+    });
+  }
+
+  function removeItem(itemRemove) {
+    setItems((prevItems) => {
+      const updatedItems = [];
+      if (itemRemove.isQuestion) setQuestionNumber(questionNumber - 1);
+      prevItems.filter((item) => {
+        if (item != itemRemove) {
+          if (item.options.id > itemRemove.options.id) {
+            updatedItems.push({
+              ...item,
+              options: { ...item.options, id: item.options.id - 1 },
+            });
+          } else {
+            updatedItems.push(item);
+          }
+          return true;
+        } else false;
+      });
+      return updatedItems;
+    });
+  }
+
+  function addItem(newItem) {
+    setAddItemMenu(!addItemMenu);
+    if (newItem.isQuestion == true) {
+      (newItem.key = uniqueId),
+        (newItem.options = {
+          id: questionNumber,
+          ...newItem.options,
+        });
+      setUniqueId(uniqueId + 1);
+      setQuestionNumber(questionNumber + 1);
+    }
+    setItems((prevItems) => [...prevItems, newItem]);
+  }
+  function makeDoc() {
+    main(items);
+  }
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    }, 1);
+
+    return () => clearTimeout(timer);
+  }, [addItemMenu]);
+
+  return (
+    <>
+      <NavBar onSubmit={makeDoc} />
+      <div id="main-content" ref={mainContentRef}>
+        {items.map((Item) => {
+          return (
+            <div className="QuestionWrapper" key={Item.key}>
+              <Item.component input={Item.input} {...Item.options} />
+              {Item.component != PaperDetails ? (
+                <button
+                  className="QuestionWrapperClose"
+                  onClick={() => {
+                    removeItem(Item);
+                  }}
+                >
+                  X
+                </button>
+              ) : (
+                <></>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {!addItemMenu ? (
+        <div id="add-item" onClick={() => setAddItemMenu(!addItemMenu)}>
+          +
+        </div>
+      ) : (
+        <AddItemMenu
+          questions={questionlist}
+          others={others}
+          onSelect={addItem}
+          onClick={() => setAddItemMenu(!addItemMenu)}
+        />
+      )}
+    </>
+  );
+}
+
+export default App;

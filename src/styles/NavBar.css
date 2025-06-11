@@ -1,0 +1,32 @@
+#NavBar {
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  position: sticky;
+  top: 0px;
+  z-index: 10;
+
+  #GenerateButton {
+    padding: 20px 30px;
+    border-radius: 10px;
+    border: none;
+    background-color: #3176f5;
+    font-size: 1.25em;
+    color: white;
+    margin-left: auto;
+  }
+
+  #NavBarHeading {
+    font-size: 2em;
+    color: rgb(50, 50, 50);
+  }
+
+  #GenerateButton:hover {
+    background-color: #2065e4;
+    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.5);
+    transform: scale(1.01);
+  }
+}

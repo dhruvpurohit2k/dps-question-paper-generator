@@ -1,0 +1,21 @@
+.MultipleChoice {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: 10px;
+  background-color: #eceff4;
+  padding: 20px;
+  border-radius: 10px;
+
+  .MultipleChoiceWrapper {
+    display: grid;
+    grid-template-columns: 8fr 1fr;
+    row-gap: 10px;
+    column-gap: 10px;
+  }
+
+  p {
+    font-size: 1.25em;
+    margin-bottom: 10px;
+  }
+}
