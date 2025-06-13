@@ -1,6 +1,8 @@
-import { Packer } from "docx";
+import dpsLogo from "./assets/logo.png";
+
 import "./App.css";
 import "./styles/questionHolder.css";
+
 import React, { useState, useEffect, useRef } from "react";
 import NavBar from "./components/NavBar";
 import PaperDetails from "./components/PaperDetails.jsx";
@@ -16,6 +18,7 @@ import SectionHeader from "./components/SectionHeader.jsx";
 import QuestionDescription from "./components/QuestionDescription.jsx";
 
 import main from "./questionpaper.js";
+import GeneralInstructions from "./components/GeneralInstructions.jsx";
 
 function App() {
   const date = new Date().toISOString().slice(0, 10);
@@ -24,8 +27,8 @@ function App() {
     {
       component: PaperDetails,
       instance: "PAPER_DETAILS",
-      key: 0,
-      options: { id: 0, changeInput: changeInput },
+      key: -1,
+      options: { id: -1, changeInput: changeInput },
       input: {
         grade: "VII",
         time: "1",
@@ -39,6 +42,24 @@ function App() {
   ]);
   const [questionNumber, setQuestionNumber] = useState(1);
 
+  const GIObj = {
+    isQuestion: false,
+    component: GeneralInstructions,
+    instance: "GENERAL_INSTRUCTIONS",
+    key: 0,
+    options: {
+      removeInstruction: removeInstruction,
+      editInstruction: editInstruction,
+      addInstruction: addInstruction,
+      id: 0,
+    },
+    input: {
+      instructions: ["This", "is", "General", "Instructions"],
+    },
+  };
+
+  const [addGI, setGI] = useState(false);
+  const [dpsLogoBase64, setDpsLogoBase64] = useState(null);
   const mainContentRef = useRef(null);
 
   const [addItemMenu, setAddItemMenu] = useState(false);
@@ -229,13 +250,33 @@ function App() {
     },
   ];
 
+  function editInstruction(idx, string) {
+    setItems((prevItems) => {
+      return prevItems.map((item, i) => {
+        if (i == 1) item.input.instructions[idx] = string;
+        return item;
+      });
+    });
+  }
+  function addInstruction() {
+    setItems((prevItems) => {
+      return prevItems.map((item, i) => {
+        if (i == 1) {
+          item.input.instructions.push("");
+        }
+        return item;
+      });
+    });
+  }
+  function removeInstruction(idx) {
+    GIObj.input.instructions = GIObj.input.instructions.filter(
+      (i) => i !== idx,
+    );
+  }
   function changeInput(id, field, event) {
     setItems((prevItems) => {
       return prevItems.map((item) => {
         if (item.options.id == id) {
-          console.log(
-            `Changing input of ${id} with ${event.target.value} at fiedl ${field}`,
-          );
           if (typeof field == "object") {
             const [questionNumber, option] = field;
             item.input[questionNumber][option] = event.target.value;
@@ -281,8 +322,53 @@ function App() {
     setItems((prevItems) => [...prevItems, newItem]);
   }
   function makeDoc() {
-    main(items);
+    if (dpsLogoBase64) {
+      main(items, dpsLogo);
+    } else {
+      console.log("ERROR");
+    }
   }
+  function addGeneralInstructions() {
+    if (!addGI) {
+      setItems((prevItems) => {
+        return prevItems.toSpliced(1, 0, GIObj);
+      });
+    } else {
+      setItems((prevItems) => {
+        return prevItems.filter((_, i) => {
+          return i !== 1;
+        });
+      });
+    }
+    setGI(!addGI);
+  }
+  useEffect(() => {
+    const imageUrlToBase64 = async (url) => {
+      try {
+        // Fetch the image from its URL
+        const response = await fetch(url);
+        // Get the response as a Blob
+        const blob = await response.blob();
+        // Create a FileReader to convert the Blob to Base64
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result); // Resolve with Base64 data URL
+          reader.onerror = reject; // Reject on error
+          reader.readAsDataURL(blob); // Read as data URL
+        });
+      } catch (error) {
+        console.error("Error converting DPS logo URL to Base64:", error);
+        return null;
+      }
+    };
+
+    // If dpsLogo exists (i.e., the import successfully gave a URL), convert it
+    if (dpsLogo) {
+      imageUrlToBase64(dpsLogo).then((base64Data) => {
+        setDpsLogoBase64(base64Data); // Store the Base64 data in state
+      });
+    }
+  }, []);
   useEffect(() => {
     const timer = setTimeout(() => {
       window.scrollTo({
@@ -302,7 +388,8 @@ function App() {
           return (
             <div className="QuestionWrapper" key={Item.key}>
               <Item.component input={Item.input} {...Item.options} />
-              {Item.component != PaperDetails ? (
+              {Item.component != PaperDetails &&
+              Item.component != GeneralInstructions ? (
                 <button
                   className="QuestionWrapperClose"
                   onClick={() => {
@@ -311,6 +398,18 @@ function App() {
                 >
                   X
                 </button>
+              ) : Item.component !== GeneralInstructions ? (
+                <div className="GIToggle">
+                  <p> Add General Instructions ? </p>
+                  <button
+                    className="GIToggleButton"
+                    onClick={() => {
+                      addGeneralInstructions();
+                    }}
+                  >
+                    {!addGI ? "Yes" : "No"}
+                  </button>
+                </div>
               ) : (
                 <></>
               )}

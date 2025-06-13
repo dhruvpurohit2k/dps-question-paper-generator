@@ -1,0 +1,26 @@
+.GeneralInstructions {
+  margin-top: 5px;
+  display: grid;
+  row-gap: 10px;
+  padding: 20px;
+  background-color: var(--item-background);
+  border-radius: 10px;
+  grid-template-columns: 1fr;
+
+  p {
+    font-size: 1.25em;
+  }
+
+  .GeneralInstruction {
+    margin-bottom: 10px;
+  }
+
+  button {
+    background-color: var(--blue);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    width: 50%;
+  }
+}

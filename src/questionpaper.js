@@ -1,4 +1,3 @@
-import * as fs from "fs";
 import { saveAs } from "file-saver";
 import {
   ImageRun,
@@ -22,6 +21,9 @@ import {
 } from "docx";
 
 const typeToFunction = {
+  GENERAL_INSTRUCTIONS: (data) => {
+    return createInstructions(data);
+  },
   QUESTION_DESCRIPTION: (data) => {
     return createQuestionTypeHeading(data.input.description);
   },
@@ -161,9 +163,7 @@ const MyTable = {
 };
 function createAbout(data) {
   const d = new Date(data.date);
-  console.log(d);
   const date = d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear();
-  console.log(date);
   return [
     new Paragraph({
       children: [
@@ -978,84 +978,34 @@ function createSectionHeading(section) {
     }),
   ];
 }
-function createInstructions() {
-  return new Paragraph({
-    children: [
+function createInstructions(data) {
+  const listOfInstructions = [];
+  data.input.instructions.forEach((instruction, i) => {
+    listOfInstructions.push(
       new TextRun({
-        text: "general instructions:\n",
-        bold: true,
-        allCaps: true,
-        italics: true,
-        size: 28,
-        break: 1,
-      }),
-      new TextRun({
-        text: "1. The question paper has ",
+        text: `${i + 1}. ${instruction}`,
         size: 24,
         italics: true,
         break: 1,
       }),
-      new TextRun({
-        text: "38 questions",
-        bold: true,
-        italics: true,
-        size: 24,
-      }),
-      new TextRun({
-        text: `. All questions are compulsory.`,
-        size: 24,
-        italics: true,
-      }),
-      new TextRun({
-        text: `2. Marks are indicated against each question.`,
-        size: 24,
-        italics: true,
-        break: 1,
-      }),
-      new TextRun({
-        text: `3. Section-A: Contains Objective question no. 1-20 carrying 1 mark each.`,
-        size: 24,
-        italics: true,
-        break: 1,
-      }),
-      new TextRun({
-        text: `4. Section-B: Contains question no. 21-26 carrying 2 marks each.`,
-        size: 24,
-        break: 1,
-        italics: true,
-      }),
-      new TextRun({
-        text: `5. Section-C: Contains question no. 27-30 carrying 3 marks each.`,
-        size: 24,
-        break: 1,
-        italics: true,
-      }),
-      new TextRun({
-        text: `6. Section-D: Contains question no. 31-34 carrying 5 marks each.`,
-        size: 24,
-        break: 1,
-        italics: true,
-      }),
-      new TextRun({
-        text: `7. Section-E: Contains question no. 35-37 is a Source-based question carrying 4 marks each.`,
-        size: 24,
-        italics: true,
-        break: 1,
-      }),
-      new TextRun({
-        text: `8. Section-F: Question no. 38 is a Map-based question from History carrying 4 marks.`,
-        size: 24,
-        break: 1,
-        italics: true,
-      }),
-      new TextRun({
-        text: `9. Writing should be neat and legible.`,
-        size: 24,
-        break: 1,
-        italics: true,
-      }),
-    ],
+    );
   });
+  return [
+    new Paragraph({
+      children: [
+        new TextRun({
+          text: "general instructions:\n",
+          bold: true,
+          allCaps: true,
+          italics: true,
+          size: 24,
+          break: 1,
+        }),
+        ...listOfInstructions,
+      ],
+    }),
+    createGap(),
+  ];
 }
 
 function createAdmissionNumberBoxes(numberOfBoxes) {
@@ -1108,7 +1058,29 @@ function createAdmissionNumberBoxes(numberOfBoxes) {
   });
 }
 
-function main(items) {
+function main(items, image) {
+  const logo = new Paragraph({
+    children: [
+      new ImageRun({
+        type: "png",
+        data: image.split(",")[1],
+        transformation: {
+          width: convertInchesToDpixles(1.17),
+          height: convertInchesToDpixles(0.65),
+        },
+        floating: {
+          horizontalPosition: {
+            relative: HorizontalPositionRelativeFrom.PAGE,
+            offset: convertInchesToEmu(0.5),
+          },
+          verticalPosition: {
+            relative: VerticalPositionRelativeFrom.PAGE,
+            offset: convertInchesToEmu(0.23),
+          },
+        },
+      }),
+    ],
+  });
   const setmargin = {
     page: {
       margin: {
@@ -1198,29 +1170,6 @@ function main(items) {
     ],
   });
 
-  //const logo = new Paragraph({
-  //  children: [
-  //    new ImageRun({
-  //      type: "png",
-  //      data: fs.readFileSync("./assets/logo.png"),
-  //      transformation: {
-  //        width: convertInchesToDpixles(1.17),
-  //        height: convertInchesToDpixles(0.65),
-  //      },
-  //      floating: {
-  //        horizontalPosition: {
-  //          relative: HorizontalPositionRelativeFrom.PAGE,
-  //          offset: convertInchesToEmu(0.5),
-  //        },
-  //        verticalPosition: {
-  //          relative: VerticalPositionRelativeFrom.PAGE,
-  //          offset: convertInchesToEmu(0.23),
-  //        },
-  //      },
-  //    }),
-  //  ],
-  //});
-
   const rows = [];
   items.forEach((item) => {
     rows.push(...typeToFunction[item.instance]({ ...item }));
@@ -1229,12 +1178,7 @@ function main(items) {
     sections: [
       {
         properties: setmargin,
-        children: [
-          //logo,
-          admissionBlock,
-          createGap(),
-          ...rows,
-        ],
+        children: [logo, admissionBlock, createGap(), ...rows],
       },
     ],
   });

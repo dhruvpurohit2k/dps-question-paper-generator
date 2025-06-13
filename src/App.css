@@ -94,3 +94,23 @@ hr {
   grid-template-columns: 8fr 1fr;
   gap: 10px;
 }
+
+.GIToggle {
+  margin-top: 5px;
+  display: flex;
+  background-color: var(--item-background);
+  border-radius: 10px;
+  padding: 20px;
+  font-size: 1.25em;
+  align-items: center;
+
+  button {
+    margin-left: auto;
+    border: none;
+    background-color: var(--blue);
+    color: white;
+    font-size: 1rem;
+    padding: 10px 20px;
+    border-radius: 20px;
+  }
+}
