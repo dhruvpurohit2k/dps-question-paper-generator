@@ -54,7 +54,7 @@ function App() {
       id: 0,
     },
     input: {
-      instructions: ["This", "is", "General", "Instructions"],
+      instructions: [],
     },
   };
 

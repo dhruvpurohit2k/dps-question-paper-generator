@@ -308,6 +308,7 @@ function createAbout(data) {
       ],
       alignment: AlignmentType.CENTER,
     }),
+    createGap(),
   ];
 }
 function createMapQuestion(number, question) {
@@ -976,6 +977,7 @@ function createSectionHeading(section) {
       },
       alignment: AlignmentType.CENTER,
     }),
+    createGap(),
   ];
 }
 function createInstructions(data) {
@@ -1004,6 +1006,7 @@ function createInstructions(data) {
         ...listOfInstructions,
       ],
     }),
+    createGap(),
     createGap(),
   ];
 }

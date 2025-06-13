@@ -20,7 +20,7 @@ function Assertion(props) {
         value={props.input.reason}
       />
       <label className="AssertionLabel">Marks</label>
-      <text
+      <input
         type="number"
         className="AssertionInputMarks"
         onChange={(event) => {
