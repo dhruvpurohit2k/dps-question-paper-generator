@@ -1,7 +1,8 @@
 #PaperDetails {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background-color: #eceff4;
+  background-color: var(--item-background);
+  color: var(--text-color);
   padding: 20px;
   border-radius: 10px;
   row-gap: 20px;

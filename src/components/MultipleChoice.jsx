@@ -9,12 +9,12 @@ function MultipleChoice(props) {
         <label className="MultipleChoiceQuesiton"> Enter question </label>
         <label className="MultipleChoiceMarks"> Marks </label>
         <textarea
-          type="number"
           className="MultipleChoiceInput"
           value={props.input.question}
           onChange={(e) => props.changeInput(props.id, "question", e)}
         />
-        <textarea
+        <input
+          type="number"
           className="MultipleChoiceInput"
           value={props.input.marks}
           onChange={(e) => props.changeInput(props.id, "marks", e)}

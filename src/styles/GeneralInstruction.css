@@ -6,6 +6,7 @@
   background-color: var(--item-background);
   border-radius: 10px;
   grid-template-columns: 1fr;
+  justify-content: left;
 
   p {
     font-size: 1.25em;
@@ -15,23 +16,28 @@
     margin-bottom: 10px;
     display: grid;
     grid-template-columns: 1.5fr 8fr 1fr;
+    font-size: 1.25rem;
+    align-items: center;
+    column-gap: 5px;
 
     .GeneralInstructionRemove {
       border: none;
+      justify-self: left;
+      padding: 5px 10px;
       background-color: var(--blue);
-      border-radius: 5px;
+      border-radius: 30px;
       color: white;
+      background-color: #fc0000;
       font-size: 1rem;
-      margin: 0px 10px;
     }
   }
 
   .GeneralInstructionAdd {
     background-color: var(--blue);
     color: white;
+    justify-self: left;
     padding: 10px 20px;
     border: none;
     border-radius: 20px;
-    width: 50%;
   }
 }
