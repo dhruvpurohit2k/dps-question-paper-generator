@@ -117,3 +117,7 @@ hr {
     border-radius: 20px;
   }
 }
+
+button {
+  font-weight: 900;
+}

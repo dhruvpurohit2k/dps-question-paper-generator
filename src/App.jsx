@@ -1,5 +1,4 @@
 import dpsLogo from "./assets/logo.png";
-
 import "./App.css";
 import "./styles/questionHolder.css";
 
@@ -19,10 +18,45 @@ import QuestionDescription from "./components/QuestionDescription.jsx";
 
 import main from "./questionpaper.js";
 import GeneralInstructions from "./components/GeneralInstructions.jsx";
+async function convertUrlToBase64(url) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const blob = await response.blob(); // Get the image as a Blob
 
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result); // reader.result will be the Base64 string
+      reader.onerror = (error) => reject(error);
+      reader.readAsDataURL(blob); // Read the Blob content as a Data URL (Base64)
+    });
+  } catch (error) {
+    console.error("Error converting URL to Base64:", error);
+    throw error; // Re-throw to handle it upstream
+  }
+}
 function App() {
   const date = new Date().toISOString().slice(0, 10);
   const [uniqueId, setUniqueId] = useState(1);
+  const [logoBase64, setLogoBase64] = useState(null);
+  const [loadingLogo, setLoadingLogo] = useState(true);
+  useEffect(() => {
+    const loadLogo = async () => {
+      try {
+        setLoadingLogo(true);
+        const base64Data = await convertUrlToBase64("./assets/logo.png");
+        setLogoBase64(base64Data);
+        console.log(logoBase64);
+      } catch (err) {
+        console.error("Failed to load DPS Logo as Base64:", err);
+      } finally {
+        setLoadingLogo(false);
+      }
+    };
+    loadLogo();
+  }, []);
   const [items, setItems] = useState([
     {
       component: PaperDetails,
@@ -59,11 +93,9 @@ function App() {
   };
 
   const [addGI, setGI] = useState(false);
-  const [dpsLogoBase64, setDpsLogoBase64] = useState(null);
   const mainContentRef = useRef(null);
 
   const [addItemMenu, setAddItemMenu] = useState(false);
-
   const questionlist = [
     {
       isQuestion: true,
@@ -332,10 +364,8 @@ function App() {
     setItems((prevItems) => [...prevItems, newItem]);
   }
   function makeDoc() {
-    if (dpsLogoBase64) {
-      main(items, dpsLogo);
-    } else {
-      console.log("ERROR");
+    if (!loadingLogo) {
+      main(items, logoBase64);
     }
   }
   function addGeneralInstructions() {
@@ -353,33 +383,6 @@ function App() {
     setGI(!addGI);
   }
   useEffect(() => {
-    const imageUrlToBase64 = async (url) => {
-      try {
-        // Fetch the image from its URL
-        const response = await fetch(url);
-        // Get the response as a Blob
-        const blob = await response.blob();
-        // Create a FileReader to convert the Blob to Base64
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result); // Resolve with Base64 data URL
-          reader.onerror = reject; // Reject on error
-          reader.readAsDataURL(blob); // Read as data URL
-        });
-      } catch (error) {
-        console.error("Error converting DPS logo URL to Base64:", error);
-        return null;
-      }
-    };
-
-    // If dpsLogo exists (i.e., the import successfully gave a URL), convert it
-    if (dpsLogo) {
-      imageUrlToBase64(dpsLogo).then((base64Data) => {
-        setDpsLogoBase64(base64Data); // Store the Base64 data in state
-      });
-    }
-  }, []);
-  useEffect(() => {
     const timer = setTimeout(() => {
       window.scrollTo({
         top: document.documentElement.scrollHeight,
@@ -393,6 +396,7 @@ function App() {
   return (
     <>
       <NavBar onSubmit={makeDoc} />
+      <img src={dpsLogo} style={{ height: "200px", width: "400px" }} />
       <div id="main-content" ref={mainContentRef}>
         {items.map((Item) => {
           return (

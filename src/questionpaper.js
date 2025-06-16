@@ -17,8 +17,6 @@ import {
   VerticalAlign,
   HeightRule,
   LineRuleType,
-  //TabStopType,
-  //TabStopPosition,
 } from "docx";
 
 const typeToFunction = {
@@ -171,6 +169,22 @@ const MyTable = {
     convertInchesToDXA(PAGE_WIDTH * 0.075),
   ],
   rows: [],
+};
+const convertBase64ToArrayBuffer = (base64String) => {
+  try {
+    // Remove the "data:image/...;base64," prefix
+    const base64Data = base64String.split(",")[1];
+    const binaryString = atob(base64Data);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+  } catch (error) {
+    console.error("Error decoding Base64 image to ArrayBuffer:", error);
+    return null;
+  }
 };
 function createAbout(data) {
   const d = new Date(data.date);
@@ -992,29 +1006,29 @@ function createAdmissionNumberBoxes(numberOfBoxes) {
   });
 }
 
-function main(items) {
-  //const logo = new Paragraph({
-  //  children: [
-  //    new ImageRun({
-  //      type: "png",
-  //      data: image.split(",")[1],
-  //      transformation: {
-  //        width: convertInchesToDpixles(1.17),
-  //        height: convertInchesToDpixles(0.65),
-  //      },
-  //      floating: {
-  //        horizontalPosition: {
-  //          relative: HorizontalPositionRelativeFrom.PAGE,
-  //          offset: convertInchesToEmu(0.5),
-  //        },
-  //        verticalPosition: {
-  //          relative: VerticalPositionRelativeFrom.PAGE,
-  //          offset: convertInchesToEmu(0.23),
-  //        },
-  //      },
-  //    }),
-  //  ],
-  //});
+function main(items, imageBase64) {
+  const arrayOfBytes = convertBase64ToArrayBuffer(imageBase64);
+  const logo = new Paragraph({
+    children: [
+      new ImageRun({
+        data: arrayOfBytes,
+        transformation: {
+          width: convertInchesToDpixles(1.17),
+          height: convertInchesToDpixles(0.65),
+        },
+        floating: {
+          horizontalPosition: {
+            relative: HorizontalPositionRelativeFrom.PAGE,
+            offset: convertInchesToEmu(0.5),
+          },
+          verticalPosition: {
+            relative: VerticalPositionRelativeFrom.PAGE,
+            offset: convertInchesToEmu(0.23),
+          },
+        },
+      }),
+    ],
+  });
   const setmargin = {
     page: {
       margin: {
@@ -1112,7 +1126,7 @@ function main(items) {
     sections: [
       {
         properties: setmargin,
-        children: [admissionBlock, createGap(), ...rows],
+        children: [logo, admissionBlock, createGap(), ...rows],
       },
     ],
   });
