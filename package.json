@@ -19,6 +19,7 @@
     "docx": "^9.5.0",
     "electron-is-dev": "^3.0.1",
     "file-saver": "^2.0.5",
+    "fs": "^0.0.1-security",
     "react": "^19.1.0",
     "react-compiler-runtime": "^19.1.0-rc.2",
     "react-dom": "^19.1.0"

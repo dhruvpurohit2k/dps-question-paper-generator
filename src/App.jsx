@@ -150,10 +150,7 @@ function App() {
         changeInput: changeInput,
       },
       input: {
-        question: {
-          string: "",
-          marks: "",
-        },
+        question: "",
         meaning: "",
         word: "",
         marks: "",
@@ -269,9 +266,22 @@ function App() {
     });
   }
   function removeInstruction(idx) {
-    GIObj.input.instructions = GIObj.input.instructions.filter(
-      (i) => i !== idx,
-    );
+    setItems((prevItems) => {
+      const removeInstructionItem = [];
+      prevItems.filter((item) => {
+        if (item.instance == "GENERAL_INSTRUCTIONS") {
+          const newInstructions = [];
+          item.input.instructions.forEach((instruction, i) => {
+            console.log(instruction);
+            if (i !== idx) newInstructions.push(instruction);
+          });
+          item.input.instructions = newInstructions;
+        }
+        removeInstructionItem.push(item);
+      });
+      console.log(removeInstructionItem);
+      return removeInstructionItem;
+    });
   }
   function changeInput(id, field, event) {
     setItems((prevItems) => {
@@ -291,7 +301,7 @@ function App() {
     setItems((prevItems) => {
       const updatedItems = [];
       if (itemRemove.isQuestion) setQuestionNumber(questionNumber - 1);
-      prevItems.filter((item) => {
+      prevItems.forEach((item) => {
         if (item != itemRemove) {
           if (item.options.id > itemRemove.options.id) {
             updatedItems.push({

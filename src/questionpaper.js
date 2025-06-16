@@ -1,3 +1,4 @@
+//import * as fs from "fs";
 import { saveAs } from "file-saver";
 import {
   ImageRun,
@@ -77,10 +78,10 @@ const typeToFunction = {
         marks: data.input.marks,
       },
       options: [
-        data.options.option1,
-        data.options.option2,
-        data.options.option3,
-        data.options.option4,
+        data.input.option1,
+        data.input.option2,
+        data.input.option3,
+        data.input.option4,
       ],
     });
   },
@@ -117,6 +118,7 @@ const typeToFunction = {
   },
   COMPLETE_TABLE: (data) => {
     return createCompleteTheTable(data.options.id, {
+      marks: data.input.marks,
       columnA: [data.input.meaning, data.input.question],
       columnB: [data.input.word, data.input.blanks],
     });
@@ -135,12 +137,18 @@ const typeToFunction = {
   },
 };
 const NO_BORDERS = {
-  top: BorderStyle.NONE,
-  bottom: BorderStyle.NONE,
-  left: BorderStyle.NONE,
-  insideVertical: BorderStyle.NONE,
-  insideHorizontal: BorderStyle.NONE,
-  right: BorderStyle.NONE,
+  top: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+  bottom: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+  left: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+  right: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+  insideVertical: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+  insideHorizontal: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+  //top: BorderStyle.NONE,
+  //bottom: BorderStyle.NONE,
+  //left: BorderStyle.NONE,
+  //right: BorderStyle.NONE,
+  //insideVertical: BorderStyle.NONE,
+  //insideHorizontal: BorderStyle.NONE,
 };
 const PAGE_MARGIN_HORIZONTAL = 0.5;
 const PAGE_MARGIN_VERTICAL = 0.5;
@@ -151,13 +159,16 @@ const MyTable = {
     type: WidthType.DXA,
   },
   margins: {
-    top: 120,
-    bottom: 120,
+    top: 60,
+    bottom: 60,
+    left: 20,
+    right: 20,
   },
   borders: NO_BORDERS,
   columnWidths: [
     convertInchesToDXA(PAGE_WIDTH * 0.075),
-    convertInchesToDXA(PAGE_WIDTH * 0.925),
+    convertInchesToDXA(PAGE_WIDTH * 0.85),
+    convertInchesToDXA(PAGE_WIDTH * 0.075),
   ],
   rows: [],
 };
@@ -312,6 +323,7 @@ function createAbout(data) {
   ];
 }
 function createMapQuestion(number, question) {
+  const INNER_TABLE_WIDTH = PAGE_WIDTH * 0.85;
   const cells = [];
   let ch = 97;
   question.options.forEach((option) => {
@@ -321,12 +333,14 @@ function createMapQuestion(number, question) {
           new Paragraph({
             children: [
               new TextRun({
-                text: `${String.fromCharCode(ch++)})  `,
+                text: `${String.fromCharCode(ch++)}) `,
                 bold: true,
+                font: "Times New Roman",
                 size: 24,
               }),
               new TextRun({
-                text: option,
+                text: `${option}`,
+                font: "Times New Roman",
                 size: 24,
               }),
             ],
@@ -337,16 +351,26 @@ function createMapQuestion(number, question) {
   });
   const rows = [];
   let i = 0;
-  while (i < cells.length) {
-    const row = new TableRow({ children: [] });
-    row.addChildElement(cells[i]);
-    if (i + 1 < cells.length) {
-      row.addChildElement(cells[i + 1]);
-    }
-    rows.push(row);
+  while (i + 1 < cells.length) {
+    rows.push(
+      new TableRow({
+        children: [cells[i], cells[i + 1]],
+      }),
+    );
     i += 2;
   }
-  console.log(rows);
+  if (i < cells.length) {
+    rows.push(
+      new TableRow({
+        children: [
+          cells[i],
+          new TableCell({
+            children: [],
+          }),
+        ],
+      }),
+    );
+  }
   return [
     new Table({
       width: MyTable.width,
@@ -365,19 +389,20 @@ function createMapQuestion(number, question) {
             new TableCell({
               children: [
                 new Table({
+                  borders: MyTable.borders,
                   width: {
-                    size: convertInchesToDXA(PAGE_WIDTH * 0.925),
+                    size: convertInchesToDXA(INNER_TABLE_WIDTH),
                     type: WidthType.DXA,
                   },
-                  borders: MyTable.borders,
                   columnWidths: [
-                    convertInchesToDXA(PAGE_WIDTH * 0.925 * 0.5),
-                    convertInchesToDXA(PAGE_WIDTH * 0.925 * 0.5),
+                    convertInchesToDXA(INNER_TABLE_WIDTH * 0.5),
+                    convertInchesToDXA(INNER_TABLE_WIDTH * 0.5),
                   ],
                   rows: [...rows],
                 }),
               ],
             }),
+            new TableCell({ children: [] }),
           ],
         }),
       ],
@@ -403,28 +428,11 @@ function createAssertionAndReason(number, question) {
       rows: [
         getQuestionRow(
           "Q" + number + ")",
-          "Assertion (A) :" + question.assertion,
+          "Assertion (A) : " + question.assertion,
           " ",
         ),
-        getQuestionRow(" ", "Reason (R) :" + question.reason, question.marks),
-        new TableRow({
-          children: [
-            new TableCell({ children: [] }),
-            new TableCell({
-              children: [
-                new Paragraph({
-                  children: [
-                    new TextRun({
-                      text: "Choose the correct option",
-                      bold: true,
-                      size: 24,
-                    }),
-                  ],
-                }),
-              ],
-            }),
-          ],
-        }),
+        getQuestionRow(" ", "Reason (R) : " + question.reason, question.marks),
+        getQuestionRow(null, "Choose correct option", null),
         ...optionRows,
       ],
     }),
@@ -432,30 +440,36 @@ function createAssertionAndReason(number, question) {
   ];
 }
 function createCompleteTheTable(number, question) {
+  console.log(question);
+  const INNER_TABLE_WIDTH = PAGE_WIDTH * 0.84;
   return [
     new Table({
       width: MyTable.width,
       borders: MyTable.borders,
+      margins: MyTable.margins,
+      columnWidths: MyTable.columnWidths,
       rows: [
+        getQuestionRow(
+          `Q${number})`,
+          "Complete the following table",
+          question.marks,
+        ),
         new TableRow({
           children: [
             new TableCell({
-              children: [
-                new Paragraph({
-                  children: [getQuestionNumber(number)],
-                }),
-              ],
+              children: [],
             }),
             new TableCell({
               children: [
                 new Table({
                   width: {
-                    size: convertInchesToDXA(PAGE_WIDTH * 0.925 - 1.5),
+                    size: convertInchesToDXA(INNER_TABLE_WIDTH),
                     type: WidthType.DXA,
                   },
+                  margins: MyTable.margins,
                   columnWidths: [
-                    convertInchesToDXA((PAGE_WIDTH * 0.925 - 1.5) * 0.75),
-                    convertInchesToDXA((PAGE_WIDTH * 0.925 - 1.5) * 0.25),
+                    convertInchesToDXA(INNER_TABLE_WIDTH * 0.5),
+                    convertInchesToDXA(INNER_TABLE_WIDTH * 0.5),
                   ],
                   rows: [
                     new TableRow({
@@ -523,10 +537,10 @@ function createCompleteTheTable(number, question) {
                 }),
               ],
             }),
+            new TableCell({ children: [] }),
           ],
         }),
       ],
-      columnWidths: MyTable.columnWidths,
     }),
     createGap(),
   ];
@@ -547,13 +561,8 @@ function convertInchesToDpixles(number) {
   return number * 96;
 }
 function createLongQuestion(number, questionObj) {
-  const tableWidth = convertInchesToDXA(PAGE_WIDTH);
   const questionRows = new Array();
   let ch = 97;
-  const cellPadding = {
-    top: 120,
-    bottom: 120,
-  };
   questionObj.subQuestions.forEach((q) => {
     questionRows.push(
       getQuestionRow(String.fromCharCode(ch++) + ") ", q.string, q.marks),
@@ -561,51 +570,12 @@ function createLongQuestion(number, questionObj) {
   });
   return [
     new Table({
+      borders: MyTable.borders,
       margins: MyTable.margins,
-      width: {
-        size: tableWidth,
-        type: WidthType.DXA,
-      },
-      borders: {
-        top: BorderStyle.NONE,
-        left: BorderStyle.NONE,
-        right: BorderStyle.NONE,
-        bottom: BorderStyle.NONE,
-        insideVertical: BorderStyle.NONE,
-        insideHorizontal: BorderStyle.NONE,
-      },
-      columnWidths: [tableWidth * 0.075, tableWidth * 0.925],
+      width: MyTable.width,
+      columnWidths: MyTable.columnWidths,
       rows: [
-        new TableRow({
-          height: {
-            value: convertInchesToTwip(1),
-            rule: HeightRule.AUTO,
-          },
-          children: [
-            new TableCell({
-              margins: cellPadding,
-              children: [
-                new Paragraph({
-                  children: [getQuestionNumber(number)],
-                }),
-              ],
-            }),
-            new TableCell({
-              margins: cellPadding,
-              children: [
-                new Paragraph({
-                  alignment: AlignmentType.JUSTIFIED,
-                  children: [
-                    new TextRun({
-                      text: questionObj.question.string,
-                      size: 24,
-                    }),
-                  ],
-                }),
-              ],
-            }),
-          ],
-        }),
+        getQuestionRow("Q" + number + ")", questionObj.question.string, null),
         ...questionRows,
       ],
     }),
@@ -626,6 +596,7 @@ function createBasicQuestion(number, question) {
   ];
 }
 function createMatchThefollowing(number, matchQuestionObj) {
+  const INNER_TABLE_WIDTH = PAGE_WIDTH * 0.84;
   const cellPadding = {
     top: 60,
     bottom: 60,
@@ -693,23 +664,10 @@ function createMatchThefollowing(number, matchQuestionObj) {
   }
   return [
     new Table({
-      width: {
-        size: convertInchesToDXA(PAGE_WIDTH),
-        type: WidthType.DXA,
-      },
-      columnWidths: [
-        convertInchesToDXA(PAGE_WIDTH * 0.075),
-        convertInchesToDXA(PAGE_WIDTH * 0.925),
-      ],
-      borders: {
-        top: BorderStyle.NONE,
-        bottom: BorderStyle.NONE,
-        left: BorderStyle.NONE,
-        right: BorderStyle.NONE,
-        insideVertical: BorderStyle.NONE,
-        insideHorizontal: BorderStyle.NONE,
-      },
-      margins: cellPadding,
+      width: MyTable.width,
+      columnWidths: MyTable.columnWidths,
+      borders: MyTable.borders,
+      margins: MyTable.margins,
       rows: [
         getQuestionRow(
           "Q" + number + ")",
@@ -729,12 +687,12 @@ function createMatchThefollowing(number, matchQuestionObj) {
               children: [
                 new Table({
                   width: {
-                    size: convertInchesToDXA(PAGE_WIDTH * 0.9),
+                    size: convertInchesToDXA(INNER_TABLE_WIDTH),
                     type: WidthType.DXA,
                   },
                   columnWidths: [
-                    convertInchesToDXA(PAGE_WIDTH * 0.9 * 0.5),
-                    convertInchesToDXA(PAGE_WIDTH * 0.9 * 0.5),
+                    convertInchesToDXA(INNER_TABLE_WIDTH * 0.5),
+                    convertInchesToDXA(INNER_TABLE_WIDTH * 0.5),
                   ],
                   rows: [
                     new TableRow({
@@ -773,18 +731,22 @@ function createMatchThefollowing(number, matchQuestionObj) {
                 }),
               ],
             }),
+            new TableCell({
+              children: [
+                new Paragraph({
+                  children: [],
+                }),
+              ],
+            }),
           ],
         }),
         new TableRow({
           children: [
             new TableCell({ children: [] }),
             new TableCell({
-              margins: {
-                top: 60,
-                bottom: 60,
-              },
               children: [options],
             }),
+            new TableCell({ children: [] }),
           ],
         }),
       ],
@@ -809,72 +771,52 @@ function getQuestionNumber(number) {
   });
 }
 function getQuestionRow(character, string, marks) {
+  console.log(`${character} ${string} ${marks}`);
   const row = new TableRow({
-    children: [],
-  });
-  if (character !== null) {
-    const marker = new TableCell({
-      children: [
-        new Paragraph({
-          alignment: AlignmentType.RIGHT,
-          children: [
-            new TextRun({
-              text: `${character}`,
-              bold: true,
-              font: "Times New Roman",
-              size: 24,
-            }),
-          ],
-        }),
-      ],
-    });
-    row.addChildElement(marker);
-  }
-  const row2 = new TableRow({
     children: [
       new TableCell({
         children: [
           new Paragraph({
             children: [
               new TextRun({
-                text: string,
+                text: character == null || character == "" ? "" : character,
+                font: "Times New Roman",
                 size: 24,
+                bold: true,
               }),
             ],
+            alignment: AlignmentType.RIGHT,
           }),
         ],
       }),
-    ],
-  });
-  if (marks !== null) {
-    row2.addChildElement(
       new TableCell({
         children: [
           new Paragraph({
             children: [
               new TextRun({
-                text: `${marks}`,
+                text: string == null || string == "" ? "" : string,
+                font: "Times New Roman",
                 size: 24,
               }),
             ],
           }),
         ],
       }),
-    );
-  }
-  const body = new Table({
-    width: {
-      size: convertInchesToDXA(PAGE_WIDTH * 0.925),
-      type: WidthType.DXA,
-    },
-    borders: MyTable.borders,
-    columnWidths: [
-      convertInchesToDXA(PAGE_WIDTH * 0.925 * 0.9),
-      convertInchesToDXA(PAGE_WIDTH * 0.925 * 0.1),
+      new TableCell({
+        children: [
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: marks == null || marks == "" ? "" : marks,
+                font: "Times New Roman",
+                size: 24,
+              }),
+            ],
+          }),
+        ],
+      }),
     ],
-    rows: [row2],
   });
-  row.addChildElement(new TableCell({ children: [body] }));
 
   return row;
 }
@@ -898,15 +840,10 @@ function createMCQ(number, questionBody) {
   });
   return [
     new Table({
-      width: {
-        size: convertInchesToDXA(PAGE_WIDTH),
-        type: WidthType.DXA,
-      },
-      borders: NO_BORDERS,
-      columnWidths: [
-        convertInchesToDXA(PAGE_WIDTH * 0.075),
-        convertInchesToDXA(PAGE_WIDTH * 0.925),
-      ],
+      width: MyTable.width,
+      borders: MyTable.borders,
+      margins: MyTable.margins,
+      columnWidths: MyTable.columnWidths,
       rows: [
         getQuestionRow(
           "Q" + number + ".",
@@ -922,19 +859,10 @@ function createMCQ(number, questionBody) {
 function createQuestionTypeHeading(string) {
   return [
     new Table({
-      width: {
-        size: convertInchesToDXA(PAGE_WIDTH),
-        type: WidthType.DXA,
-      },
-      margins: {
-        top: 120,
-        bottom: 120,
-      },
-      borders: NO_BORDERS,
-      columnWidths: [
-        convertInchesToDXA(PAGE_WIDTH * 0.075),
-        convertInchesToDXA(PAGE_WIDTH * 0.925),
-      ],
+      margins: MyTable.margins,
+      width: MyTable.width,
+      columnWidths: MyTable.columnWidths,
+      borders: MyTable.borders,
       rows: [
         new TableRow({
           children: [
@@ -953,6 +881,9 @@ function createQuestionTypeHeading(string) {
                   ],
                 }),
               ],
+            }),
+            new TableCell({
+              children: [],
             }),
           ],
         }),
@@ -1061,29 +992,29 @@ function createAdmissionNumberBoxes(numberOfBoxes) {
   });
 }
 
-function main(items, image) {
-  const logo = new Paragraph({
-    children: [
-      new ImageRun({
-        type: "png",
-        data: image.split(",")[1],
-        transformation: {
-          width: convertInchesToDpixles(1.17),
-          height: convertInchesToDpixles(0.65),
-        },
-        floating: {
-          horizontalPosition: {
-            relative: HorizontalPositionRelativeFrom.PAGE,
-            offset: convertInchesToEmu(0.5),
-          },
-          verticalPosition: {
-            relative: VerticalPositionRelativeFrom.PAGE,
-            offset: convertInchesToEmu(0.23),
-          },
-        },
-      }),
-    ],
-  });
+function main(items) {
+  //const logo = new Paragraph({
+  //  children: [
+  //    new ImageRun({
+  //      type: "png",
+  //      data: image.split(",")[1],
+  //      transformation: {
+  //        width: convertInchesToDpixles(1.17),
+  //        height: convertInchesToDpixles(0.65),
+  //      },
+  //      floating: {
+  //        horizontalPosition: {
+  //          relative: HorizontalPositionRelativeFrom.PAGE,
+  //          offset: convertInchesToEmu(0.5),
+  //        },
+  //        verticalPosition: {
+  //          relative: VerticalPositionRelativeFrom.PAGE,
+  //          offset: convertInchesToEmu(0.23),
+  //        },
+  //      },
+  //    }),
+  //  ],
+  //});
   const setmargin = {
     page: {
       margin: {
@@ -1181,7 +1112,7 @@ function main(items, image) {
     sections: [
       {
         properties: setmargin,
-        children: [logo, admissionBlock, createGap(), ...rows],
+        children: [admissionBlock, createGap(), ...rows],
       },
     ],
   });
