@@ -4,7 +4,8 @@
   --green-alpha: #009540dd;
   --item-background: #eeeeee77;
   --text-color: #000;
-  --blue: #1e66f5;
+  /*--blue: #1e66f5;*/
+  --blue: #2b7fff;
   --dark-blue: #2065e4;
 }
 
@@ -19,5 +20,4 @@
   box-sizing: border-box;
 }
 
-body {
-}
+body {}
