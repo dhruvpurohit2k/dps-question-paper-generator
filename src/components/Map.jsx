@@ -5,6 +5,7 @@ function Map(props) {
       <p>Q{props.id}. Mark the following on the map </p>
       <label className="MapLabel">Marks</label>
       <input
+        type="number"
         className="MapInputMarks"
         value={props.input.marks}
         onChange={(e) => props.changeInput(props.id, "marks", e)}

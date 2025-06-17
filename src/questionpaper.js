@@ -17,6 +17,7 @@ import {
   VerticalAlign,
   HeightRule,
   LineRuleType,
+  PageBreak,
 } from "docx";
 
 const typeToFunction = {
@@ -75,6 +76,7 @@ const typeToFunction = {
         string: "On the given map of India mark the following",
         marks: data.input.marks,
       },
+      map: data.input.map,
       options: [
         data.input.option1,
         data.input.option2,
@@ -172,7 +174,6 @@ const MyTable = {
 };
 const convertBase64ToArrayBuffer = (base64String) => {
   try {
-    // Remove the "data:image/...;base64," prefix
     const base64Data = base64String.split(",")[1];
     const binaryString = atob(base64Data);
     const len = binaryString.length;
@@ -341,6 +342,7 @@ function createAbout(data) {
   ];
 }
 function createMapQuestion(number, question) {
+  const arrayOfBytes = convertBase64ToArrayBuffer(question.map);
   const INNER_TABLE_WIDTH = PAGE_WIDTH * 0.85;
   const cells = [];
   let ch = 97;
@@ -425,7 +427,106 @@ function createMapQuestion(number, question) {
         }),
       ],
     }),
+    new Paragraph({
+      children: [new PageBreak()],
+    }),
+    new Table({
+      margins: {
+        top: 180,
+        bottom: 180,
+      },
+      borders: MyTable.borders,
+      width: MyTable.width,
+      columnWidths: [
+        convertInchesToDXA(PAGE_WIDTH * 0.333),
+        convertInchesToDXA(PAGE_WIDTH * 0.333),
+        convertInchesToDXA(PAGE_WIDTH * 0.333),
+      ],
+      rows: [
+        new TableRow({
+          children: [
+            new TableCell({
+              columnSpan: 2,
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.LEFT,
+                  children: [
+                    new TextRun({
+                      text: "Name : ____________________________",
+                      bold: true,
+                      font: "Times New Roman",
+                      size: 24,
+                    }),
+                  ],
+                }),
+              ],
+            }),
+            new TableCell({
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.LEFT,
+                  children: [
+                    new TextRun({
+                      text: "Roll No.:_____",
+                      bold: true,
+                      font: "Times New Roman",
+                      size: 24,
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.LEFT,
+                  children: [
+                    new TextRun({
+                      text: "Class/Sec:__________",
+                      bold: true,
+                      font: "Times New Roman",
+                      size: 24,
+                    }),
+                  ],
+                }),
+              ],
+            }),
+            new TableCell({ children: [] }),
+            new TableCell({
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.LEFT,
+                  children: [
+                    new TextRun({
+                      text: "Teacher's Sign:______________",
+                      bold: true,
+                      font: "Times New Roman",
+                      size: 24,
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    }),
     createGap(),
+    new Paragraph({
+      children: [
+        new ImageRun({
+          data: arrayOfBytes,
+          transformation: {
+            width: convertInchesToDpixles(7),
+            height: convertInchesToDpixles(8),
+          },
+        }),
+      ],
+    }),
   ];
 }
 
@@ -458,7 +559,6 @@ function createAssertionAndReason(number, question) {
   ];
 }
 function createCompleteTheTable(number, question) {
-  console.log(question);
   const INNER_TABLE_WIDTH = PAGE_WIDTH * 0.84;
   return [
     new Table({
@@ -789,7 +889,6 @@ function getQuestionNumber(number) {
   });
 }
 function getQuestionRow(character, string, marks) {
-  console.log(`${character} ${string} ${marks}`);
   const row = new TableRow({
     children: [
       new TableCell({

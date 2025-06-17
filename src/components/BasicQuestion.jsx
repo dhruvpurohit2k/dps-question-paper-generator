@@ -15,13 +15,13 @@ function BasicQuestion(props) {
         <label className="BasicQuestionLabel">Enter Question</label>
         <label className="BasicQuestionLabel">Marks</label>
         <textarea
-          clasName="BaiscQuestionInput"
+          className="BaiscQuestionInput"
           onChange={(event) => props.changeInput(props.id, "question", event)}
           value={props.input.question}
         />
         <input
           type="number"
-          clasName="BaiscQuestionInput"
+          className="BaiscQuestionInput"
           onChange={(event) => props.changeInput(props.id, "marks", event)}
           value={props.input.marks}
         />

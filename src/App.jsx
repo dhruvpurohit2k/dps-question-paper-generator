@@ -1,4 +1,5 @@
 import dpsLogo from "./assets/logo.png";
+import indiaMap from "./assets/mapImage.jpg";
 import "./App.css";
 import "./styles/questionHolder.css";
 import React, { useState, useEffect, useRef } from "react";
@@ -98,19 +99,21 @@ function App() {
   const [uniqueId, setUniqueId] = useState(1);
   const [logoBase64, setLogoBase64] = useState(null);
   const [loadingLogo, setLoadingLogo] = useState(true);
+  const [mapImage, setMapImage] = useState(null);
   useEffect(() => {
-    const loadLogo = async () => {
+    const loadLogo = async (image, setter) => {
       try {
         setLoadingLogo(true);
-        const base64Data = await convertUrlToBase64(dpsLogo);
-        setLogoBase64(base64Data);
+        const base64Data = await convertUrlToBase64(image);
+        setter(base64Data);
       } catch (err) {
         console.error("Failed to load DPS Logo as Base64:", err);
       } finally {
         setLoadingLogo(false);
       }
     };
-    loadLogo();
+    loadLogo(dpsLogo, setLogoBase64);
+    loadLogo(indiaMap, setMapImage);
   }, []);
   const [items, setItems] = useState([
     {
@@ -310,6 +313,7 @@ function App() {
         option2: "",
         option3: "",
         option4: "",
+        map: mapImage,
       },
     },
   ];
@@ -473,7 +477,6 @@ function App() {
   }
   function makeDoc() {
     if (logoBase64 !== null) {
-      //console.log(items);
       main(items, logoBase64);
     }
   }
