@@ -1,4 +1,5 @@
 import dpsLogo from "./assets/logo.png";
+console.log(dpsLogo);
 import "./App.css";
 import "./styles/questionHolder.css";
 
@@ -46,7 +47,7 @@ function App() {
     const loadLogo = async () => {
       try {
         setLoadingLogo(true);
-        const base64Data = await convertUrlToBase64("./assets/logo.png");
+        const base64Data = await convertUrlToBase64(dpsLogo);
         setLogoBase64(base64Data);
         console.log(logoBase64);
       } catch (err) {
@@ -364,7 +365,7 @@ function App() {
     setItems((prevItems) => [...prevItems, newItem]);
   }
   function makeDoc() {
-    if (!loadingLogo) {
+    if (logoBase64 !== null) {
       main(items, logoBase64);
     }
   }
@@ -396,7 +397,6 @@ function App() {
   return (
     <>
       <NavBar onSubmit={makeDoc} />
-      <img src={dpsLogo} style={{ height: "200px", width: "400px" }} />
       <div id="main-content" ref={mainContentRef}>
         {items.map((Item) => {
           return (
