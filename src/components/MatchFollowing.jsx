@@ -8,7 +8,7 @@ function MatchFollowing(props) {
         <input
           className="MatchFollowingInputMarks"
           value={props.input.marks}
-          onChange={(e) => props.changeInput(props.id, setMarks, e)}
+          onChange={(e) => props.changeInput(props.id, "marks", e)}
         />
       </div>
       <div></div>

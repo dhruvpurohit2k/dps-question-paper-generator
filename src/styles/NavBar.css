@@ -12,13 +12,17 @@
   top: 0px;
   z-index: 10;
 
-  #GenerateButton {
+  .NavButton {
     padding: 20px 30px;
     border-radius: 5px;
     border: none;
     background-color: #3176f5;
     font-size: 1.25em;
     color: white;
+    margin-left: 20px;
+  }
+
+  .NavButton:first-of-type {
     margin-left: auto;
   }
 
@@ -28,7 +32,7 @@
     /*color: rgb(50, 50, 50);*/
   }
 
-  #GenerateButton:hover {
+  .NavButton:hover {
     background-color: #2065e4;
     box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.5);
     transform: scale(1.01);

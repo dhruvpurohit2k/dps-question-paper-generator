@@ -1,8 +1,6 @@
 import dpsLogo from "./assets/logo.png";
-console.log(dpsLogo);
 import "./App.css";
 import "./styles/questionHolder.css";
-
 import React, { useState, useEffect, useRef } from "react";
 import NavBar from "./components/NavBar";
 import PaperDetails from "./components/PaperDetails.jsx";
@@ -19,6 +17,8 @@ import QuestionDescription from "./components/QuestionDescription.jsx";
 
 import main from "./questionpaper.js";
 import GeneralInstructions from "./components/GeneralInstructions.jsx";
+import { saveAs } from "file-saver";
+
 async function convertUrlToBase64(url) {
   try {
     const response = await fetch(url);
@@ -39,6 +39,61 @@ async function convertUrlToBase64(url) {
   }
 }
 function App() {
+  const InstanceToComponent = {
+    SECTION: {
+      instance: "SECTION",
+      options: {
+        changeInput: changeInput,
+      },
+    },
+    QUESTION_DESCRIPTION: {
+      component: QuestionDescription,
+      options: {
+        changeInput: changeInput,
+      },
+    },
+    PAPER_DETAILS: {
+      component: PaperDetails,
+      options: { id: -1, changeInput: changeInput },
+    },
+    GENERAL_INSTRUCTIONS: {
+      component: GeneralInstructions,
+      options: {
+        removeInstruction: removeInstruction,
+        editInstruction: editInstruction,
+        addInstruction: addInstruction,
+        id: 0,
+      },
+    },
+    MULTIPLE_CHOICE: {
+      component: MultipleChoice,
+      options: { changeInput: changeInput },
+    },
+    LONG_QUESTION: {
+      component: LongQuestion,
+      options: { changeInput: changeInput },
+    },
+    MATCH_FOLLOWING: {
+      component: MatchFollowing,
+      options: { changeInput: changeInput },
+    },
+    COMPLETE_TABLE: {
+      component: CompleteTable,
+      options: { changeInput: changeInput },
+    },
+    QUESTION: {
+      component: BasicQuestion,
+      options: { changeInput: changeInput },
+    },
+    ASSERTION: {
+      component: Assertion,
+      options: { changeInput: changeInput },
+    },
+    MAP: {
+      component: Map,
+      options: { changeInput: changeInput },
+    },
+  };
   const date = new Date().toISOString().slice(0, 10);
   const [uniqueId, setUniqueId] = useState(1);
   const [logoBase64, setLogoBase64] = useState(null);
@@ -49,7 +104,6 @@ function App() {
         setLoadingLogo(true);
         const base64Data = await convertUrlToBase64(dpsLogo);
         setLogoBase64(base64Data);
-        console.log(logoBase64);
       } catch (err) {
         console.error("Failed to load DPS Logo as Base64:", err);
       } finally {
@@ -75,6 +129,12 @@ function App() {
       },
     },
   ]);
+  const [jsonData, setJsonData] = useState(items);
+  const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    setItems(jsonData);
+  }, [jsonData]);
   const [questionNumber, setQuestionNumber] = useState(1);
 
   const GIObj = {
@@ -280,6 +340,48 @@ function App() {
     },
   ];
 
+  function saveItem() {
+    const itemString = JSON.stringify(items);
+    const blob = new Blob([itemString], { type: "application/json" });
+    saveAs(
+      blob,
+      `${items[0].input.subject}-${items[0].input.paperType}-${items[0].input.date}.json`,
+    );
+    //const url = URL.createObjectURL(blob);
+    //saveAs;
+    //URL.revokeObjectURL(url);
+  }
+  function loadJson() {
+    fileInputRef.current.click();
+  }
+  function loadItem(e) {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.type !== "application/json") {
+        alert("PLEASE UPLOAD A JSON FILE.");
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        try {
+          const content = e.target.result;
+          const parsedData = JSON.parse(content);
+          if (parsedData) setJsonData(parsedData);
+        } catch (err) {
+          console.log("ERROR WHILE PARSING");
+        }
+      };
+
+      reader.onerror = () => {
+        console.log("COULDN'T READ THE FILE.");
+      };
+      reader.readAsText(file);
+    } else {
+      console.log("FILE WASN'T UPLOADED");
+    }
+  }
   function editInstruction(idx, string) {
     setItems((prevItems) => {
       return prevItems.map((item, i) => {
@@ -305,14 +407,12 @@ function App() {
         if (item.instance == "GENERAL_INSTRUCTIONS") {
           const newInstructions = [];
           item.input.instructions.forEach((instruction, i) => {
-            console.log(instruction);
             if (i !== idx) newInstructions.push(instruction);
           });
           item.input.instructions = newInstructions;
         }
         removeInstructionItem.push(item);
       });
-      console.log(removeInstructionItem);
       return removeInstructionItem;
     });
   }
@@ -361,11 +461,19 @@ function App() {
         });
       setUniqueId(uniqueId + 1);
       setQuestionNumber(questionNumber + 1);
+    } else {
+      newItem.key = uniqueId;
+      newItem.options = {
+        id: uniqueId,
+        ...newItem.options,
+      };
+      setUniqueId(uniqueId + 1);
     }
     setItems((prevItems) => [...prevItems, newItem]);
   }
   function makeDoc() {
     if (logoBase64 !== null) {
+      //console.log(items);
       main(items, logoBase64);
     }
   }
@@ -396,14 +504,25 @@ function App() {
 
   return (
     <>
-      <NavBar onSubmit={makeDoc} />
+      <NavBar onSubmit={makeDoc} onSave={saveItem} onLoad={loadJson} />
+      <input
+        type="file"
+        onChange={(e) => loadItem(e)}
+        accept=".json,application/json"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+      />
       <div id="main-content" ref={mainContentRef}>
         {items.map((Item) => {
+          const Component = InstanceToComponent[Item.instance].component;
+          const options = {
+            ...InstanceToComponent[Item.instance].options,
+            ...Item.options,
+          };
           return (
             <div className="QuestionWrapper" key={Item.key}>
-              <Item.component input={Item.input} {...Item.options} />
-              {Item.component != PaperDetails &&
-              Item.component != GeneralInstructions ? (
+              <Component input={Item.input} {...options} />
+              {Component != PaperDetails && Component != GeneralInstructions ? (
                 <button
                   className="QuestionWrapperClose"
                   onClick={() => {
@@ -412,7 +531,7 @@ function App() {
                 >
                   X
                 </button>
-              ) : Item.component !== GeneralInstructions ? (
+              ) : Component !== GeneralInstructions ? (
                 <div className="GIToggle">
                   <p> Add General Instructions ? </p>
                   <button

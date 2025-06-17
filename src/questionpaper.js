@@ -50,10 +50,10 @@ const typeToFunction = {
     return createMatchThefollowing(data.options.id, {
       question: data.input.question,
       columnB: [
-        data.input.colB[0],
-        data.input.colB[1],
-        data.input.colB[2],
-        data.input.colB[3],
+        data.input.colB.row1,
+        data.input.colB.row2,
+        data.input.colB.row3,
+        data.input.colB.row4,
       ],
       answers: [
         data.input.option1,
@@ -62,10 +62,10 @@ const typeToFunction = {
         data.input.option4,
       ],
       columnA: [
-        data.input.colA[0],
-        data.input.colA[1],
-        data.input.colA[2],
-        data.input.colA[3],
+        data.input.colA.row1,
+        data.input.colA.row2,
+        data.input.colA.row3,
+        data.input.colA.row4,
       ],
     });
   },
@@ -219,6 +219,10 @@ function createAbout(data) {
     new Table({
       width: MyTable.width,
       borders: MyTable.borders,
+      columnWidths: [
+        convertInchesToDXA(PAGE_WIDTH * 0.5),
+        convertInchesToDXA(PAGE_WIDTH * 0.5),
+      ],
       rows: [
         new TableRow({
           height: {
@@ -393,7 +397,7 @@ function createMapQuestion(number, question) {
       columnWidths: MyTable.columnWidths,
       rows: [
         getQuestionRow(
-          "Q" + number + ")",
+          "Q" + number + ".",
           question.question.string,
           question.question.marks,
         ),
@@ -464,7 +468,7 @@ function createCompleteTheTable(number, question) {
       columnWidths: MyTable.columnWidths,
       rows: [
         getQuestionRow(
-          `Q${number})`,
+          `Q${number}.`,
           "Complete the following table",
           question.marks,
         ),
@@ -589,7 +593,7 @@ function createLongQuestion(number, questionObj) {
       width: MyTable.width,
       columnWidths: MyTable.columnWidths,
       rows: [
-        getQuestionRow("Q" + number + ")", questionObj.question.string, null),
+        getQuestionRow("Q" + number + ".", questionObj.question.string, null),
         ...questionRows,
       ],
     }),
@@ -684,7 +688,7 @@ function createMatchThefollowing(number, matchQuestionObj) {
       margins: MyTable.margins,
       rows: [
         getQuestionRow(
-          "Q" + number + ")",
+          "Q" + number + ".",
           matchQuestionObj.question.string,
           matchQuestionObj.question.marks,
         ),

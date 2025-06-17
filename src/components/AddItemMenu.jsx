@@ -12,7 +12,7 @@ function AddItemMenu(props) {
         ? props.questions.map((question) => {
             return (
               <div
-                key={Math.floor(Math.random() * 100)}
+                key={Math.floor(Math.random() * 10000)}
                 className="AddItemMenuItem"
                 onClick={() => props.onSelect(question)}
               >
@@ -23,7 +23,7 @@ function AddItemMenu(props) {
         : props.others.map((other) => {
             return (
               <div
-                key={Math.floor(Math.random() * 100)}
+                key={Math.floor(Math.random() * 10000)}
                 className="AddItemMenuItem"
                 onClick={() => {
                   return props.onSelect(other);
