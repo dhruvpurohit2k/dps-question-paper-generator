@@ -13,7 +13,8 @@
     "electron-dev": "electron .",
     "electron-pack": "electron-builder --dir",
     "electron-dist-linux": "electron-builder -l",
-    "electron-dist-windows": "electron-builder -w"
+    "electron-dist-windows": "electron-builder -w",
+    "electron-dist-mac": "electron-builder -m"
   },
   "dependencies": {
     "babel-plugin-react-compiler": "^19.1.0-rc.2",
