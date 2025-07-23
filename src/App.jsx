@@ -43,6 +43,7 @@ function App() {
   const InstanceToComponent = {
     SECTION: {
       instance: "SECTION",
+      component: SectionHeader,
       options: {
         changeInput: changeInput,
       },
@@ -458,11 +459,11 @@ function App() {
   function addItem(newItem) {
     setAddItemMenu(!addItemMenu);
     if (newItem.isQuestion == true) {
-      (newItem.key = uniqueId),
+      ((newItem.key = uniqueId),
         (newItem.options = {
           id: questionNumber,
           ...newItem.options,
-        });
+        }));
       setUniqueId(uniqueId + 1);
       setQuestionNumber(questionNumber + 1);
     } else {

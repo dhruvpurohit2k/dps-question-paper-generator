@@ -2,22 +2,22 @@
   padding: 25px;
   display: flex;
   align-items: center;
-  /*background-color: rgba(255, 255, 255, 0.8);*/
-  /*background-color: #8aadf4aa;*/
-  box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.2);
+  background-color: #fdfdfdaa;
+  box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.2);
   width: 100%;
-  margin-top: 10px;
-  border-radius: 10px;
+  /*margin-top: 10px;*/
+  margin: 20px;
+  border-radius: 20px;
   position: sticky;
   top: 0px;
   z-index: 10;
 
   .NavButton {
-    padding: 20px 30px;
+    padding: 10px 15px;
     border-radius: 5px;
     border: none;
     background-color: #3176f5;
-    font-size: 1.25em;
+    font-size: 1.15em;
     color: white;
     margin-left: 20px;
   }
