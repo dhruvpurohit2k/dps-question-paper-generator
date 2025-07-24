@@ -15,7 +15,7 @@
   .GeneralInstruction {
     margin-bottom: 10px;
     display: grid;
-    grid-template-columns: 1.5fr 8fr 1fr;
+    grid-template-columns: 2fr 8fr 1fr;
     font-size: 1.25rem;
     align-items: center;
     column-gap: 5px;
@@ -23,21 +23,27 @@
     .GeneralInstructionRemove {
       border: none;
       justify-self: left;
-      padding: 5px 10px;
+      padding: 7px 13px;
       background-color: var(--blue);
       border-radius: 30px;
       color: white;
-      background-color: #fc0000;
-      font-size: 1rem;
+      background-color: #f21f1f;
+      /*font-size: 0.8rem;*/
     }
   }
 
   .GeneralInstructionAdd {
-    background-color: var(--blue);
-    color: white;
+    /*background-color: var(--blue);*/
+    background-color: transparent;
+    color: var(--blue);
     justify-self: left;
     padding: 10px 20px;
     border: none;
-    border-radius: 20px;
+    border-radius: 5px;
+  }
+
+  .GeneralInstructionAdd:hover {
+    color: white;
+    background-color: var(--blue);
   }
 }

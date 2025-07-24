@@ -550,6 +550,7 @@ function App() {
               ) : (
                 <></>
               )}
+              <div className="softLine"></div>
             </div>
           );
         })}
