@@ -60,15 +60,15 @@
     },
     "win": {
       "target": "nsis",
-      "icon": "public/logo.png"
+      "icon": "public/exam.svg"
     },
     "mac": {
       "target": "dmg",
-      "icon": "public/logo.png"
+      "icon": "public/exam.svg"
     },
     "linux": {
       "target": "AppImage",
-      "icon": "public/logo.png"
+      "icon": "public/exam.svg"
     }
   }
 }

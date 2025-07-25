@@ -22,7 +22,7 @@
 
     .GeneralInstructionRemove {
       border: none;
-      justify-self: left;
+      justify-self: right;
       padding: 7px 13px;
       background-color: var(--blue);
       border-radius: 30px;
