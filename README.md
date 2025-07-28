@@ -4,12 +4,22 @@
   This project also served the purpose of leanring about react and electron. React's reusable componenet based design helped a lot here since we constantly reuse components.
 </p>
 
+<p align="justify">
+  This app also supports save and load functionality. On saving the data gets saved as a json. When you want to continue where you left off, you can load the json that you saved previously.
+</p>
+
+
+![app's front page](preview-images/front-page.png)
+
+
+
+
 
 
 # Requirements
  Just needs node and npm for the build process.
 
-# Using The App
+# Using the App
 <p align="justify">
   
 Before anything run`npm -i` to install the required dependencies.
@@ -24,7 +34,7 @@ Just run the command `npm run dev` to launch the app in the browser. Then you ca
 You can also use `npm run electron-dev` to launch it as an electron app.
 </p>
 
-## Building the apo
+## Building the app
 
 <p align="justify">
 
@@ -34,4 +44,7 @@ You can also use `npm run electron-dev` to launch it as an electron app.
    - `npm run electron-dist-windows` for windows
    - `npm run electron-dist-mac` for mac
 </p>
+
+
+
 
